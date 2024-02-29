@@ -6,14 +6,14 @@ use std::{
 };
 
 const BATCH_TOKENS: usize = 512;
-const N_LEN: i32 = 32;
+const N_LEN: i32 = 64;
 
 /// Adapted from: https://github.com/ggerganov/llama.cpp/blob/master/examples/simple/simple.cpp
 #[test]
 pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Prompt
 
-    const PROMPT:&str = "Do you like green eggs and ham?";
+    const PROMPT:&str = "The unanimous Declaration of the thirteen united States of America, When in the Course of human events, it becomes necessary for one people to dissolve the political bands which have connected them with another, and to assume among the powers of the earth,";
 
     // Global init
 
@@ -84,9 +84,7 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     // llama_decode will output logits only for the last token of the prompt
     // (add the last token with logits = true)
     {
-        let logits = unsafe {
-            slice::from_raw_parts_mut(batch.logits, BATCH_TOKENS)
-        };
+        let logits = unsafe { slice::from_raw_parts_mut(batch.logits, BATCH_TOKENS) };
 
         logits[usize::try_from(batch.n_tokens - 1).unwrap()] = 1;
     }
@@ -166,41 +164,14 @@ pub fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Check results (this should match the next part of the poem)
-    assert_eq!(&tokens_list, &[
-        1,
-        1938,
-        366,
-        763,
-        7933,
-        29808,
-        322,
-        16366,
-        29973,
-        13,
-        29902,
-        437,
-        451,
-        763,
-        963,
-        29892,
-        3685,
-        29899,
-        29902,
-        29899,
-        314,
-        29889,
-        13,
-        29902,
-        437,
-        451,
-        763,
-        7933,
-        29808,
-        322,
-        16366,
-        29889,
-        13,
-    ]);
+    assert_eq!(
+        &tokens_list,
+        &[
+            1, 450, 443, 11576, 681, 3826, 23838, 310, 278, 266, 381, 9404, 443, 1573, 3900, 310, 6813, 29892, 1932, 297, 278, 6325, 344, 310, 5199,
+            4959, 29892, 372, 7415, 5181, 363, 697, 2305, 304, 23556, 345, 278, 8604, 22706, 607, 505, 6631, 963, 411, 1790, 29892, 322, 304, 5251,
+            4249, 278, 10801, 310, 278, 8437, 29892, 278, 5004, 322, 5186, 5073, 304, 607, 278, 997
+        ]
+    );
 
     Ok(())
 }
@@ -222,7 +193,7 @@ fn token_to_piece(token: llama_token, model: *const llama_model) -> String {
 fn llama_batch_add(batch: &mut llama_batch, token: llama_token, pos: usize, logits: bool) {
     assert!(batch.n_tokens <= BATCH_TOKENS as i32);
 
-    let n_tokens:usize = batch.n_tokens.try_into().unwrap();
+    let n_tokens: usize = batch.n_tokens.try_into().unwrap();
 
     unsafe {
         slice::from_raw_parts_mut(batch.token, BATCH_TOKENS)[n_tokens] = token;
