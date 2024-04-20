@@ -1,6 +1,6 @@
 [package]
-name = "llama-cpp-sys"
-version = "0.4.0"
+name = "llama-cpp-sys-3"
+version = "0.5.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -13,3 +13,9 @@ bindgen = "0.64.0"
 
 [dev-dependencies]
 rand = "0.8.5"
+
+[features]
+cuda = []
+cuda_f16 = ["cuda"]
+native = []
+# TODO(mdegans): vulkan, kompute, clblast, mpi, CUDA on Windows, etc.
